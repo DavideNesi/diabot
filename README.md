@@ -1,3 +1,5 @@
 # Diabot
-A DIY telepresence robot
+## A DIY telepresence robot
+
+
 ![Diabot](model.png)
