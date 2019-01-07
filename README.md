@@ -1,2 +1,2 @@
-# diabot
+# Diabot
 A DIY telepresence robot
