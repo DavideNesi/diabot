@@ -78,7 +78,7 @@
             if (response.includes("ready")) {
                 var inputAddr = document.getElementById("botAddressText").value;
                 var punctuationless = inputAddr.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                document.getElementById("frameContainer").innerHTML = "<iframe allow='camera; microphone' src='https://appr.tc/r/" + punctuationless + "bot" + "' width='100%' height='100%'></iframe>";
+                document.getElementById("frameContainer").innerHTML = "<iframe allow='camera; microphone' src='https://appr.tc/r/diabot" + "' width='100%' height='100%'></iframe>";
                 document.getElementById('myModal').style.display = "none";
                 document.getElementById("standBtn").disabled = false;
                 document.getElementById("sitBtn").disabled = true;
@@ -307,7 +307,13 @@
             }
         }
 
+        var wPressed = false;
+        var aPressed = false;
+        var sPressed = false;
+        var dPressed = false;
+        var otherPressed = false;
         var lastPressedKey = "";
+
         document.onkeydown = function(evt) {
             evt = evt || window.event;
             var charCode = evt.keyCode || evt.which;
@@ -320,6 +326,7 @@
                 document.getElementById('demo').innerHTML = "Pressed button: " + charStr;
                 switch (charStr) {
                     case "W": //forward
+                        wPressed = true;
                         if (lastPressedKey != "W") {
                             document.getElementById("forwardBtn").style.background = '#e9ecef';
                             document.getElementById("rightBtn").style.background = '#ffca2c';
@@ -336,6 +343,7 @@
 
                         break;
                     case "D": // right
+                        dPressed = true;
                         if (lastPressedKey != "D") {
                             document.getElementById("rightBtn").style.background = '#e9ecef';
                             document.getElementById("forwardBtn").style.background = '#ffca2c';
@@ -352,6 +360,7 @@
 
                         break;
                     case "S": // backward
+                        sPressed = true;
                         if (lastPressedKey != "S") {
                             document.getElementById("backwardBtn").style.background = '#e9ecef';
                             document.getElementById("forwardBtn").style.background = '#ffca2c';
@@ -368,6 +377,7 @@
 
                         break;
                     case "A": //left
+                        aPressed = true;
                         if (lastPressedKey != "A") {
                             document.getElementById("leftBtn").style.background = '#e9ecef';
                             document.getElementById("forwardBtn").style.background = '#ffca2c';
@@ -385,6 +395,7 @@
                         break;
 
                     default: //default stop
+                        otherPressed = true;
                         document.getElementById("stopBtn").style.background = '#e9ecef';
                         document.getElementById("forwardBtn").style.background = '#ffca2c';
                         document.getElementById("rightBtn").style.background = '#ffca2c';
@@ -403,8 +414,42 @@
             var e = document.getElementById("controlsSelector");
             var selectedControl = e.options[e.selectedIndex].value;
             if (selectedControl == "keyboard") {
+                switch (charStr) {
+                    case "W": //forward
+                        wPressed = false;
+                        break;
+                    case "A": //left
+                        aPressed = false;
+                        break;
+                    case "S": //back
+                        sPressed = false;
+                        break;
+                    case "D": //right
+                        dPressed = false;
+                        break;
+                    default:
+                        dPressed = false;
+                }
+
                 lastPressedKey = "";
-                sendOrder("3;3;0;0");
+                if (!wPressed && !aPressed && !sPressed && !dPressed) {
+                    sendOrder("3;3;0;0");
+                    document.getElementById("stopBtn").style.background = '#e9ecef';
+                    document.getElementById("forwardBtn").style.background = '#ffca2c';
+                    document.getElementById("rightBtn").style.background = '#ffca2c';
+                    document.getElementById("backwardBtn").style.background = '#ffca2c';
+                    document.getElementById("leftBtn").style.background = '#ffca2c';
+                }
+                if (wPressed) {
+                    var e = document.getElementById("speedSelector");
+                    var selectedGear = document.getElementById("speedSelector").options[e.selectedIndex].value;
+                    if (selectedGear == "fast") {
+                        sendOrder("5;5;0;0");
+                    } else {
+                        sendOrder("4;4;0;0");
+                    }
+                    lastPressedKey = "W";
+                }
                 document.getElementById('demo').innerHTML = "Released button: " + charStr;
             }
         };
@@ -761,8 +806,7 @@
     </nav>
     <div id="frameContainer">
         <div class="messageInstructions">
-            <p id="centeredP">
-                <h1 style="color:#e9ecef; top:50%;">Please connect to a robot</h1></p>
+                <h1 style="color:#e9ecef; top:50%;">Please connect to a robot</h1>
         </div>
 
         <!--
