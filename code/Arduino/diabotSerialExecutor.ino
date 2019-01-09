@@ -26,6 +26,8 @@ String receivedOrder = "3;3;3;1";
 void setup() {
   Serial.begin(9600);
 
+  Serial.setTimeout(50);
+
   leftServo.attach(LEFT_SERVO_PIN);
   rightServo.attach(RIGHT_SERVO_PIN);
   neckServo.attach(NECK_SERVO_PIN);
@@ -39,6 +41,7 @@ void loop() {
 
   if (Serial.available()) {
     receivedOrder = Serial.readString();
+    //Serial.write("\nreceived");
   }
 
   lastOrder[0] = receivedOrder.charAt(0) - '0';
