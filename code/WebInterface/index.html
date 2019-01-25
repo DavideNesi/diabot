@@ -30,6 +30,7 @@
                 }
                 xmlHttp.open("GET", "http://" + inputAddr + "/connect", true);
                 xmlHttp.send(null);
+                sendOrder("3;3;0;0");
             } else {
                 document.getElementById("frameContainer").innerHTML = "<div class='messageInstructions'><p id='centeredP'><h1 style='color:#e9ecef; top:50%;'>Please connect to a robot</h1></p></div>"; //TODO
                 document.getElementById("botAddressText").disabled = false;
@@ -56,7 +57,6 @@
             document.getElementById("modalHeaderH1").innerHTML = "Bot not responding...";
             setTimeout(closeModal, 3000);
             document.getElementById("frameContainer").innerHTML = "<div class='messageInstructions'><p id='centeredP'><h1 style='color:#e9ecef; top:50%;'>Please connect to a robot</h1></p></div>"; //TODO
-            document.getElementById('demo').innerHTML = "Bot not found";
             document.getElementById("standBtn").disabled = true;
             document.getElementById("sitBtn").disabled = true;
             document.getElementById("forwardBtn").disabled = true;
@@ -74,11 +74,10 @@
         }
 
         function handleGetResponse(response) {
-            document.getElementById('demo').innerHTML = response;
             if (response.includes("ready")) {
                 var inputAddr = document.getElementById("botAddressText").value;
                 var punctuationless = inputAddr.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "");
-                document.getElementById("frameContainer").innerHTML = "<iframe allow='camera; microphone' src='https://appr.tc/r/diabot" + "' width='100%' height='100%'></iframe>";
+                document.getElementById("frameContainer").innerHTML = "<iframe allow='camera; microphone' src='https://appr.tc/r/"+ String((new Date).getTime()).substr(7) + "' width='100%' height='100%'></iframe>";
                 document.getElementById('myModal').style.display = "none";
                 document.getElementById("standBtn").disabled = false;
                 document.getElementById("sitBtn").disabled = true;
@@ -91,7 +90,6 @@
                 document.getElementById("speedSelector").disabled = false;
                 document.getElementById("botAddressText").disabled = true;
                 $("#arc-slider").roundSlider("enable");
-                document.getElementById('demo').innerHTML = "Bot found and connected";
                 document.getElementById("connectBtn").value = "Disconnect";
             } else {
                 showNotFound();
@@ -137,7 +135,6 @@
 
             switch (id) {
                 case 0: //forward
-                    document.getElementById('demo').innerHTML = "Going forward";
                     if (selectedGear == "fast") {
                         sendOrder("5;5;0;0");
                     } else {
@@ -145,7 +142,6 @@
                     }
                     break;
                 case 1: // right
-                    document.getElementById('demo').innerHTML = "Going right";
                     if (selectedGear == "fast") {
                         sendOrder("5;1;0;0");
                     } else {
@@ -153,7 +149,6 @@
                     }
                     break;
                 case 2: // backward
-                    document.getElementById('demo').innerHTML = "Going backward";
                     if (selectedGear == "fast") {
                         sendOrder("1;1;0;0");
                     } else {
@@ -161,7 +156,6 @@
                     }
                     break;
                 case 3: //left
-                    document.getElementById('demo').innerHTML = "Going left";
                     if (selectedGear == "fast") {
                         sendOrder("1;5;0;0");
                     } else {
@@ -169,12 +163,10 @@
                     }
                     break;
                 case 4: //stop
-                    document.getElementById('demo').innerHTML = "Stay still";
                     sendOrder("3;3;0;0");
                     break;
 
                 default: //default stop
-                    document.getElementById('demo').innerHTML = "Stay still";
                     sendOrder("3;3;0;0");
             }
 
@@ -192,12 +184,14 @@
             document.getElementById("controlsSelector").disabled = true;
             document.getElementById("speedSelector").disabled = true;
             $("#arc-slider").roundSlider("disable");
-            setTimeout(reenable, 5000);
+            setTimeout(reenableAfterStanding, 3000);
             animateProgressBar(1);
 
-            function reenable() {
+            function reenableAfterStanding() {
                 document.getElementById("standBtn").disabled = true;
                 document.getElementById("sitBtn").disabled = false;
+                var e = document.getElementById("controlsSelector");
+                var selectedControl = e.options[e.selectedIndex].value;
                 if (selectedControl != "keyboard") {
                     document.getElementById("forwardBtn").disabled = false;
                     document.getElementById("leftBtn").disabled = false;
@@ -223,10 +217,10 @@
             document.getElementById("controlsSelector").disabled = true;
             document.getElementById("speedSelector").disabled = true;
             $("#arc-slider").roundSlider("disable");
-            setTimeout(reenable, 5000);
+            setTimeout(reenableAfterSitting, 3000);
             animateProgressBar(-1);
 
-            function reenable() {
+            function reenableAfterSitting() {
                 document.getElementById("sitBtn").disabled = true;
                 document.getElementById("standBtn").disabled = false;
                 var e = document.getElementById("controlsSelector");
@@ -248,7 +242,7 @@
             if (action == -1) {
                 var elem = document.getElementById("progressBar1");
                 var width = 100;
-                var id = setInterval(frame1, 50);
+                var id = setInterval(frame1, 20);
 
                 function frame1() {
                     if (width < 1) {
@@ -261,7 +255,7 @@
             } else if (action == 1) {
                 var elem = document.getElementById("progressBar1");
                 var width = 1;
-                var id = setInterval(frame2, 50);
+                var id = setInterval(frame2, 20);
 
                 function frame2() {
                     if (width >= 100) {
@@ -272,6 +266,18 @@
                     }
                 }
             }
+        }
+        
+        function reenableCross(){
+            var e = document.getElementById("controlsSelector");
+            var selectedControl = e.options[e.selectedIndex].value;
+                                    if (selectedControl != "keyboard") {
+                                        document.getElementById("forwardBtn").disabled = false;
+                                        document.getElementById("leftBtn").disabled = false;
+                                        document.getElementById("stopBtn").disabled = false;
+                                        document.getElementById("rightBtn").disabled = false;
+                                        document.getElementById("backwardBtn").disabled = false;
+                                    }
         }
 
         function changeInput() {
@@ -289,7 +295,6 @@
                 document.getElementById("backwardBtn").style.background = '#ffca2c';
                 document.getElementById("leftBtn").style.background = '#ffca2c';
                 sendOrder("3;3;0;0");
-                document.getElementById('demo').innerHTML = "Use W-A-S-D to move";
             } else {
                 document.getElementById("stopBtn").style.background = '#ffca2c';
                 document.getElementById("forwardBtn").style.background = '#ffca2c';
@@ -302,7 +307,6 @@
                 document.getElementById("stopBtn").disabled = false;
                 document.getElementById("rightBtn").disabled = false;
                 document.getElementById("backwardBtn").disabled = false;
-                document.getElementById('demo').innerHTML = "Use on screen arrow to move";
 
             }
         }
@@ -323,7 +327,6 @@
             if (selectedControl == "keyboard") {
                 var e = document.getElementById("speedSelector");
                 var selectedGear = e.options[e.selectedIndex].value; //fast, slow, normal
-                document.getElementById('demo').innerHTML = "Pressed button: " + charStr;
                 switch (charStr) {
                     case "W": //forward
                         wPressed = true;
@@ -450,7 +453,6 @@
                     }
                     lastPressedKey = "W";
                 }
-                document.getElementById('demo').innerHTML = "Released button: " + charStr;
             }
         };
     </script>
@@ -707,7 +709,8 @@
                                 // send data to raspberry
                                 sendOrder("0;0;" + args['value'] + ";0");
                                 //animations
-                                var sitDisabled = document.getElementById("sitBtn").disabled = true;
+                                //var sitDisabled = document.getElementById("sitBtn").disabled = true;
+                                var sitDisabled = document.getElementById("sitBtn").disabled;
                                 document.getElementById("standBtn").disabled = true;
                                 document.getElementById("forwardBtn").disabled = true;
                                 document.getElementById("leftBtn").disabled = true;
@@ -717,7 +720,7 @@
                                 document.getElementById("controlsSelector").disabled = true;
                                 document.getElementById("speedSelector").disabled = true;
                                 $("#arc-slider").roundSlider("disable");
-                                setTimeout(reenableSlider, 1500);
+                                setTimeout(reenableSlider, 800);
 
                                 function reenableSlider() {
                                     if (sitDisabled) {
@@ -727,17 +730,12 @@
                                         document.getElementById("sitBtn").disabled = false;
                                         document.getElementById("standBtn").disabled = true;
                                     }
-                                    document.getElementById("forwardBtn").disabled = false;
-                                    document.getElementById("leftBtn").disabled = false;
-                                    document.getElementById("stopBtn").disabled = false;
-                                    document.getElementById("rightBtn").disabled = false;
-                                    document.getElementById("backwardBtn").disabled = false;
+                                    reenableCross();
                                     document.getElementById("controlsSelector").disabled = false;
                                     document.getElementById("speedSelector").disabled = false;
                                     $("#arc-slider").roundSlider("enable");
                                 }
-                                document.getElementById('demo').innerHTML = "Changed head position";
-                                //document.getElementById("head").src = "gc" + args['value'] + ".png";
+                                document.getElementById("head").src = "gc" + args['value'] + ".png";
                             }
                         });
 
@@ -799,9 +797,7 @@
                 </div>
             </div>
 
-            <div>Status:
-                <div id="demo">Page loaded</div>
-            </div>
+
         </div>
     </nav>
     <div id="frameContainer">
